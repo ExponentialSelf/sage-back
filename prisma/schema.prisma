@@ -1,0 +1,32 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Product {
+  id Int  @id @default(autoincrement())
+  receiver String @db.VarChar(40)
+  quantity Int 
+  unique_id String @db.VarChar(40) @unique
+  reference String @db.VarChar(40)
+  model String @db.VarChar(40)
+  gate String @db.VarChar(40)
+  supplier_code String @db.VarChar(40)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+   @@unique([id, unique_id])
+}
+
+model Worker {
+  id Int  @id @default(autoincrement())
+  name String @db.VarChar(40)
+  role String @db.VarChar(40)
+}
