@@ -28,5 +28,6 @@ model Product {
 model Worker {
   id Int  @id @default(autoincrement())
   name String @db.VarChar(40)
+  password String @db.VarChar(256)
   role String @db.VarChar(40)
 }

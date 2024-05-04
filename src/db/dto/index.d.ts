@@ -8,3 +8,8 @@ export interface IProduct {
     gate: string;
     supplier_code: string;
 }
+
+export interface IUser {
+    username: string;
+    password: string;
+}

@@ -19,63 +19,41 @@ let DbController = class DbController {
     constructor(dbService) {
         this.dbService = dbService;
     }
-    create(unique_id, receiver, quantity, reference, model, gate, supplier_code) {
-        if (!unique_id) {
-            return {
-                error: 'unique_id is required'
-            };
-        }
-        if (!quantity) {
-            return {
-                error: 'quantity is required'
-            };
-        }
-        if (!reference) {
-            return {
-                error: 'reference is required'
-            };
-        }
-        if (!model) {
-            return {
-                error: 'model is required'
-            };
-        }
-        if (!gate) {
-            return {
-                error: 'gate is required'
-            };
-        }
-        if (!supplier_code) {
-            return {
-                error: 'supplier_code is required'
-            };
-        }
-        const payload = {
-            unique_id,
-            receiver,
-            quantity: Number(quantity),
-            reference,
-            model,
-            gate,
-            supplier_code
-        };
+    create(payload) {
+        console.log(payload);
         return this.dbService.createProduct(payload);
+    }
+    getAll(take, skip) {
+        return this.dbService.getAll(take, skip);
+    }
+    verifyUser(payload) {
+        return this.dbService.verifyUser(payload);
     }
 };
 exports.DbController = DbController;
 __decorate([
-    (0, common_1.Get)('/create/product/:id'),
-    __param(0, (0, common_1.Param)('id')),
-    __param(1, (0, common_1.Query)('receiver')),
-    __param(2, (0, common_1.Query)('quantity')),
-    __param(3, (0, common_1.Query)('reference')),
-    __param(4, (0, common_1.Query)('model')),
-    __param(5, (0, common_1.Query)('gate')),
-    __param(6, (0, common_1.Query)('supplier_code')),
+    (0, common_1.Post)('/products/create'),
+    __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String, Number, String, String, String, String]),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], DbController.prototype, "create", null);
+__decorate([
+    (0, common_1.Get)('/products/getAll'),
+    __param(0, (0, common_1.Query)('take')),
+    __param(1, (0, common_1.Query)('skip')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:returntype", void 0)
+], DbController.prototype, "getAll", null);
+__decorate([
+    (0, common_1.Post)('/users/verify'),
+    (0, common_1.HttpCode)(200),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], DbController.prototype, "verifyUser", null);
 exports.DbController = DbController = __decorate([
     (0, common_1.Controller)('db'),
     __metadata("design:paramtypes", [db_service_1.DbService])

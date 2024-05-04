@@ -12,6 +12,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.DbService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../prisma/prisma.service");
+const jwt = require("jsonwebtoken");
+const secrets_1 = require("../secrets");
 let DbService = class DbService {
     constructor(prisma) {
         this.prisma = prisma;
@@ -21,6 +23,41 @@ let DbService = class DbService {
             data: payload
         });
         return result;
+    }
+    getAll(take, skip) {
+        return this.prisma.product.findMany({
+            skip: Number(skip),
+            take: Number(take),
+            orderBy: {
+                model: 'asc'
+            }
+        });
+    }
+    async verifyUser(payload) {
+        let res = {
+            message: "",
+            ok: false
+        };
+        const encrypted_pass = jwt.sign(payload.password, secrets_1.Secret.JWT_TOKEN, { algorithm: 'HS256' });
+        console.log(encrypted_pass);
+        const response = await this.prisma.worker.findFirstOrThrow({
+            where: {
+                password: encrypted_pass,
+                AND: {
+                    name: payload.username
+                }
+            }
+        }).then((response) => {
+            res.message = "Login successful";
+            res.ok = true;
+        })
+            .catch((err) => {
+            res.message = "Login unsuccessful";
+            res.ok = false;
+            throw new common_1.HttpException(res, common_1.HttpStatus.NOT_FOUND);
+        });
+        throw new common_1.HttpException(res, common_1.HttpStatus.FOUND);
+        return res;
     }
 };
 exports.DbService = DbService;
