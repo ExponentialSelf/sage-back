@@ -18,11 +18,67 @@ let DbService = class DbService {
     constructor(prisma) {
         this.prisma = prisma;
     }
-    createProduct(payload) {
-        const result = this.prisma.product.create({
-            data: payload
+    async createProduct(payload) {
+        const res = {
+            message: "",
+            payload: payload,
+            result: undefined
+        };
+        const token = await this.prisma.token.findFirst({
+            where: {
+                token: payload.token
+            }
         });
-        return result;
+        if (!token) {
+            res.message = "Token is invalid";
+            throw new common_1.HttpException(res, common_1.HttpStatus.UNAUTHORIZED);
+        }
+        try {
+            const data = payload.data;
+            console.log(data);
+            const result = await this.prisma.product.create({
+                data: payload.data
+            });
+            res.result = result;
+            res.message = "Product created";
+            return res;
+        }
+        catch (err) {
+            res.message = "Product already exists";
+            throw new common_1.HttpException({ res, err }, common_1.HttpStatus.BAD_REQUEST);
+        }
+    }
+    async deleteProduct(payload) {
+        const res = {
+            message: "",
+            payload: payload,
+            result: undefined
+        };
+        const token = await this.prisma.token.findFirst({
+            where: {
+                token: payload.token
+            }
+        });
+        if (!token) {
+            res.message = "Token is invalid";
+            throw new common_1.HttpException(res, common_1.HttpStatus.UNAUTHORIZED);
+        }
+        try {
+            const result = await this.prisma.product.delete({
+                where: {
+                    unique_id: payload.data.unique_id
+                }
+            });
+            console.log(result);
+            console.log(Object.values(result).length == 0);
+            res.result = result;
+            res.message = "Product found";
+            return res;
+        }
+        catch (err) {
+            res.message = "Product not found";
+            throw new common_1.HttpException({ res, err }, common_1.HttpStatus.BAD_REQUEST);
+        }
     }
     getAll(take, skip) {
         return this.prisma.product.findMany({
@@ -36,10 +92,12 @@ let DbService = class DbService {
     async verifyUser(payload) {
         let res = {
             message: "",
-            ok: false
+            ok: false,
+            token: ""
         };
         const encrypted_pass = jwt.sign(payload.password, secrets_1.Secret.JWT_TOKEN, { algorithm: 'HS256' });
         console.log(encrypted_pass);
+        console.log(payload);
         const response = await this.prisma.worker.findFirstOrThrow({
             where: {
                 password: encrypted_pass,
@@ -47,17 +105,35 @@ let DbService = class DbService {
                     name: payload.username
                 }
             }
-        }).then((response) => {
+        }).then(async (response) => {
             res.message = "Login successful";
             res.ok = true;
+            const date = (new Date()).toString();
+            const tokenization = jwt.sign(date, secrets_1.Secret.JWT_TOKEN, { algorithm: 'HS256' });
+            res.token = tokenization;
+            const token = await this.prisma.token.upsert({
+                create: {
+                    token: tokenization,
+                    workerId: Number(response.id)
+                },
+                update: {
+                    token: tokenization
+                },
+                where: {
+                    id: Number(response.id)
+                }
+            });
+            console.log({ token });
+            return res;
         })
             .catch((err) => {
+            console.log(err);
             res.message = "Login unsuccessful";
             res.ok = false;
-            throw new common_1.HttpException(res, common_1.HttpStatus.NOT_FOUND);
+            throw new common_1.HttpException(res, common_1.HttpStatus.BAD_REQUEST);
         });
-        throw new common_1.HttpException(res, common_1.HttpStatus.FOUND);
-        return res;
+        console.log(response);
+        return response;
     }
 };
 exports.DbService = DbService;

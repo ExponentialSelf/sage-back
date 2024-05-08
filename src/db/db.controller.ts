@@ -1,16 +1,43 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, HttpCode } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, HttpCode, HttpException, HttpStatus } from '@nestjs/common';
 import { DbService } from './db.service';
-import { IProduct, IUser } from './dto';
+import { AuthenticatedProductPayload, IProduct, IUser } from './dto';
 
 
 @Controller('db')
 export class DbController {
   constructor(private readonly dbService: DbService) {}
-  @Post('/products/create')
-  create(@Body() payload :IProduct)
+  @Post('/products/handler')
+  create(@Body() payload :AuthenticatedProductPayload)
   {
-    console.log(payload)
+   console.log('Commencing product creation')
+   console.log('Payload:', payload)
+   if (!payload.data) {
+    throw new HttpException("Data was missing or malformed", HttpStatus.UNPROCESSABLE_ENTITY)
+  }
+  if (!payload.token) {
+    throw new HttpException("Token was missing", HttpStatus.UNPROCESSABLE_ENTITY)
+  }
+  if  (typeof payload.data.quantity != "number") {
+    throw new HttpException(`Quantity should be a Number (currently: ${typeof payload.data.quantity})`, HttpStatus.UNPROCESSABLE_ENTITY)
+  } 
     return this.dbService.createProduct(payload)
+  }
+
+  @Delete('/products/handler')
+  delete(@Body() payload :AuthenticatedProductPayload)
+  {
+    console.log('Payload:', payload)
+    console.log('Commencing product deletion')
+    if (!payload.data) {
+      throw new HttpException("Data was missing or malformed", HttpStatus.UNPROCESSABLE_ENTITY)
+    }
+    if (!payload.token) {
+      throw new HttpException("Token was missing", HttpStatus.UNPROCESSABLE_ENTITY)
+    }
+    if  (typeof payload.data.quantity != "number") {
+      throw new HttpException(`Quantity should be a Number (currently: ${typeof payload.data.quantity})`, HttpStatus.UNPROCESSABLE_ENTITY)
+    }
+    return this.dbService.deleteProduct(payload)
   }
 
   @Get('/products/getAll')

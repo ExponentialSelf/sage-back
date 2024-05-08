@@ -20,8 +20,32 @@ let DbController = class DbController {
         this.dbService = dbService;
     }
     create(payload) {
-        console.log(payload);
+        console.log('Commencing product creation');
+        console.log('Payload:', payload);
+        if (!payload.data) {
+            throw new common_1.HttpException("Data was missing or malformed", common_1.HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+        if (!payload.token) {
+            throw new common_1.HttpException("Token was missing", common_1.HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+        if (typeof payload.data.quantity != "number") {
+            throw new common_1.HttpException(`Quantity should be a Number (currently: ${typeof payload.data.quantity})`, common_1.HttpStatus.UNPROCESSABLE_ENTITY);
+        }
         return this.dbService.createProduct(payload);
+    }
+    delete(payload) {
+        console.log('Payload:', payload);
+        console.log('Commencing product deletion');
+        if (!payload.data) {
+            throw new common_1.HttpException("Data was missing or malformed", common_1.HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+        if (!payload.token) {
+            throw new common_1.HttpException("Token was missing", common_1.HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+        if (typeof payload.data.quantity != "number") {
+            throw new common_1.HttpException(`Quantity should be a Number (currently: ${typeof payload.data.quantity})`, common_1.HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+        return this.dbService.deleteProduct(payload);
     }
     getAll(take, skip) {
         return this.dbService.getAll(take, skip);
@@ -32,12 +56,19 @@ let DbController = class DbController {
 };
 exports.DbController = DbController;
 __decorate([
-    (0, common_1.Post)('/products/create'),
+    (0, common_1.Post)('/products/handler'),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], DbController.prototype, "create", null);
+__decorate([
+    (0, common_1.Delete)('/products/handler'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], DbController.prototype, "delete", null);
 __decorate([
     (0, common_1.Get)('/products/getAll'),
     __param(0, (0, common_1.Query)('take')),

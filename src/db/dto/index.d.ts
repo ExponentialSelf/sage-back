@@ -1,4 +1,5 @@
 
+
 export interface IProduct {
     receiver: string;
     quantity: number;
@@ -12,4 +13,9 @@ export interface IProduct {
 export interface IUser {
     username: string;
     password: string;
+}
+
+export interface AuthenticatedProductPayload {
+    data: IProduct;
+    token: string;
 }
