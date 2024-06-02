@@ -11,30 +11,47 @@ datasource db {
 }
 
 model Product {
-  id Int  @id @default(autoincrement())
-  receiver String @db.VarChar(40)
-  quantity Int 
-  unique_id String @db.VarChar(40) @unique
-  reference String @db.VarChar(40)
-  model String @db.VarChar(40)
-  gate String @db.VarChar(40)
-  supplier_code String @db.VarChar(40)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id            Int      @id @default(autoincrement())
+  receiver      String   @db.VarChar(40)
+  quantity      Int
+  unique_id     String   @unique @db.VarChar(40)
+  reference     String   @db.VarChar(40)
+  model         String   @db.VarChar(40)
+  gate          String   @db.VarChar(40)
+  supplier_code String   @db.VarChar(40)
+  name          Worker   @relation(fields: [username], references: [name])
+  username      String   @db.VarChar(40)
+  status        ProductStatus
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
-   @@unique([id, unique_id])
+  @@unique([id, unique_id])
 }
 
 model Worker {
-  id Int  @id @default(autoincrement())
-  name String @db.VarChar(40)
-  password String @db.VarChar(256)
-  role String @db.VarChar(40)
+  id        Int       @id @default(autoincrement())
+  name      String    @unique @db.VarChar(40)
+  password  String    @db.VarChar(256)
+  role      Role      @default(WORKER)
+  createdAt DateTime  @default(now())
+  Product   Product[]
+
+  @@unique([id, name])
+}
+
+enum Role {
+  WORKER
+  ADMIN
+}
+
+enum ProductStatus {
+  IN_STOCK
+  NO_LONGER_IN_STOCK
 }
 
 model Token {
-  id Int  @id @default(autoincrement())
-  token String @db.VarChar(256)
-  workerId Int 
-  createdAt DateTime @default(now()) 
+  id        Int      @id @default(autoincrement())
+  token     String   @db.VarChar(256)
+  workerId  Int
+  createdAt DateTime @default(now())
 }
