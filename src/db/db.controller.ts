@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Query, HttpCode, HttpException, HttpStatus, Put } from '@nestjs/common';
 import { DbService } from './db.service';
-import { AuthenticatedProductPayload, AuthenticatedProductSearchPayload, AuthenticatedUserSearchPayload, IProduct, IProductSearch, IUser, IUserSearch } from './dto';
+import { AuthenticatedAnomlyPayload, AuthenticatedProductPayload, AuthenticatedProductSearchPayload, AuthenticatedUserPayload, AuthenticatedUserSearchPayload, IProduct, IProductSearch, IUser, IUserSearch } from './dto';
 
 
 @Controller('db')
@@ -24,7 +24,7 @@ export class DbController {
   if (!token) {
     throw new HttpException("Token was invalid", HttpStatus.UNPROCESSABLE_ENTITY)
   }
-  const productStatus = ['IN_STOCK','NO_LONGER_IN_STOCK']
+  const productStatus = ['IN_STOCK','LOST','DAMAGED','INSPECTED','SHIPPED','ANOMLY']
   if (!productStatus.includes(payload?.data?.status)) {
     throw new HttpException("Product status selected does not exist", HttpStatus.BAD_REQUEST)
   }
@@ -49,7 +49,7 @@ export class DbController {
   if (!token) {
     throw new HttpException("Token was invalid", HttpStatus.UNPROCESSABLE_ENTITY)
   }
-  const productStatus = ['IN_STOCK','NO_LONGER_IN_STOCK']
+  const productStatus = ['IN_STOCK','LOST','DAMAGED','INSPECTED','SHIPPED','ANOMLY']
   if (!productStatus.includes(payload?.data?.status)) {
     throw new HttpException("Product status selected does not exist", HttpStatus.BAD_REQUEST)
   }
@@ -109,10 +109,10 @@ export class DbController {
 
   @Post('/users/create')
   @HttpCode(201)
-  createUser(@Body() payload: IUser)
+  createUser(@Body() payload: AuthenticatedUserPayload)
   {
-    const roles = ['ADMIN','WORKER']
-    if (!roles.includes(payload?.role)) {
+    const roles = ['ADMIN','WORKER','CONTROLLER']
+    if (!roles.includes(payload?.data.role)) {
       throw new HttpException("Role selected does not exist", HttpStatus.BAD_REQUEST)
     }
     return this.dbService.createUser(payload)
@@ -137,4 +137,39 @@ export class DbController {
     return this.dbService.searchUsers(payload)
   }
 
+  /* Anomlies */
+  @Get('/anomly/getAll')
+  @HttpCode(200)
+  getAllAnomlies() {
+    return this.dbService.getAnomlies()
+  }
+
+  @Post('/anomly/handler')
+  @HttpCode(201)
+  createAnomly(@Body() payload:AuthenticatedAnomlyPayload)
+  {
+    return this.dbService.createAnomly(payload)
+  }
+
+  @Put('/anomly/handler')
+  @HttpCode(201)
+  updateAnomly(@Body() payload:AuthenticatedAnomlyPayload)
+  {
+    return this.dbService.updateAnomly(payload)
+  }
+
+  @Delete('/anomly/handler')
+  @HttpCode(201)
+  deleteAnomly(@Body() payload:AuthenticatedAnomlyPayload)
+  {
+    return this.dbService.deleteAnomly(payload)
+  }
+
+  /* Statistics */
+  @Get('/statistics/anomlies')
+  @HttpCode(200)
+  async statisticsAnomlies() 
+  {
+    return await this.dbService.statisticsAnomlies()
+  }
 }

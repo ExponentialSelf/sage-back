@@ -1,5 +1,5 @@
 import { DbService } from './db.service';
-import { AuthenticatedProductPayload, AuthenticatedProductSearchPayload, AuthenticatedUserSearchPayload, IUser } from './dto';
+import { AuthenticatedAnomlyPayload, AuthenticatedProductPayload, AuthenticatedProductSearchPayload, AuthenticatedUserPayload, AuthenticatedUserSearchPayload, IUser } from './dto';
 export declare class DbController {
     private readonly dbService;
     constructor(dbService: DbService);
@@ -31,6 +31,9 @@ export declare class DbController {
         status: import(".prisma/client").$Enums.ProductStatus;
         createdAt: Date;
         updatedAt: Date;
+        anomlyId: string;
+        anomalyDescription: string;
+        reported: boolean;
     }[]>;
     searchProducts(payload: AuthenticatedProductSearchPayload): Promise<{
         message: string;
@@ -42,7 +45,7 @@ export declare class DbController {
         ok: boolean;
         token: string;
     }>;
-    createUser(payload: IUser): Promise<{
+    createUser(payload: AuthenticatedUserPayload): Promise<{
         message: string;
         ok: boolean;
     }>;
@@ -52,6 +55,31 @@ export declare class DbController {
         data: any;
     }>;
     searchUsers(payload: AuthenticatedUserSearchPayload): Promise<{
+        message: string;
+        ok: boolean;
+        data: any;
+    }>;
+    getAllAnomlies(): Promise<{
+        message: string;
+        ok: boolean;
+        data: any;
+    }>;
+    createAnomly(payload: AuthenticatedAnomlyPayload): Promise<{
+        message: string;
+        payload: AuthenticatedAnomlyPayload;
+        result: any;
+    }>;
+    updateAnomly(payload: AuthenticatedAnomlyPayload): Promise<{
+        message: string;
+        payload: AuthenticatedAnomlyPayload;
+        result: any;
+    }>;
+    deleteAnomly(payload: AuthenticatedAnomlyPayload): Promise<{
+        message: string;
+        payload: AuthenticatedAnomlyPayload;
+        result: any;
+    }>;
+    statisticsAnomlies(): Promise<{
         message: string;
         ok: boolean;
         data: any;

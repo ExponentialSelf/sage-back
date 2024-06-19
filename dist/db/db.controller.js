@@ -35,7 +35,7 @@ let DbController = class DbController {
         if (!token) {
             throw new common_1.HttpException("Token was invalid", common_1.HttpStatus.UNPROCESSABLE_ENTITY);
         }
-        const productStatus = ['IN_STOCK', 'NO_LONGER_IN_STOCK'];
+        const productStatus = ['IN_STOCK', 'LOST', 'DAMAGED', 'INSPECTED', 'SHIPPED', 'ANOMLY'];
         if (!productStatus.includes(payload?.data?.status)) {
             throw new common_1.HttpException("Product status selected does not exist", common_1.HttpStatus.BAD_REQUEST);
         }
@@ -57,7 +57,7 @@ let DbController = class DbController {
         if (!token) {
             throw new common_1.HttpException("Token was invalid", common_1.HttpStatus.UNPROCESSABLE_ENTITY);
         }
-        const productStatus = ['IN_STOCK', 'NO_LONGER_IN_STOCK'];
+        const productStatus = ['IN_STOCK', 'LOST', 'DAMAGED', 'INSPECTED', 'SHIPPED', 'ANOMLY'];
         if (!productStatus.includes(payload?.data?.status)) {
             throw new common_1.HttpException("Product status selected does not exist", common_1.HttpStatus.BAD_REQUEST);
         }
@@ -98,8 +98,8 @@ let DbController = class DbController {
         return this.dbService.verifyUser(payload);
     }
     createUser(payload) {
-        const roles = ['ADMIN', 'WORKER'];
-        if (!roles.includes(payload?.role)) {
+        const roles = ['ADMIN', 'WORKER', 'CONTROLLER'];
+        if (!roles.includes(payload?.data.role)) {
             throw new common_1.HttpException("Role selected does not exist", common_1.HttpStatus.BAD_REQUEST);
         }
         return this.dbService.createUser(payload);
@@ -116,6 +116,21 @@ let DbController = class DbController {
             throw new common_1.HttpException("Token was invalid", common_1.HttpStatus.UNPROCESSABLE_ENTITY);
         }
         return this.dbService.searchUsers(payload);
+    }
+    getAllAnomlies() {
+        return this.dbService.getAnomlies();
+    }
+    createAnomly(payload) {
+        return this.dbService.createAnomly(payload);
+    }
+    updateAnomly(payload) {
+        return this.dbService.updateAnomly(payload);
+    }
+    deleteAnomly(payload) {
+        return this.dbService.deleteAnomly(payload);
+    }
+    async statisticsAnomlies() {
+        return await this.dbService.statisticsAnomlies();
     }
 };
 exports.DbController = DbController;
@@ -190,6 +205,44 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], DbController.prototype, "searchUsers", null);
+__decorate([
+    (0, common_1.Get)('/anomly/getAll'),
+    (0, common_1.HttpCode)(200),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], DbController.prototype, "getAllAnomlies", null);
+__decorate([
+    (0, common_1.Post)('/anomly/handler'),
+    (0, common_1.HttpCode)(201),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], DbController.prototype, "createAnomly", null);
+__decorate([
+    (0, common_1.Put)('/anomly/handler'),
+    (0, common_1.HttpCode)(201),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], DbController.prototype, "updateAnomly", null);
+__decorate([
+    (0, common_1.Delete)('/anomly/handler'),
+    (0, common_1.HttpCode)(201),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], DbController.prototype, "deleteAnomly", null);
+__decorate([
+    (0, common_1.Get)('/statistics/anomlies'),
+    (0, common_1.HttpCode)(200),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], DbController.prototype, "statisticsAnomlies", null);
 exports.DbController = DbController = __decorate([
     (0, common_1.Controller)('db'),
     __metadata("design:paramtypes", [db_service_1.DbService])

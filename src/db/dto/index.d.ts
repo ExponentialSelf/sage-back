@@ -10,6 +10,8 @@ export interface IProduct {
     supplier_code: string;
     username: string;
     status: ProductStatus
+    anomlyId?: string;
+    anomlyDescription?: string;
 }
 
 export interface IProductSearch {
@@ -22,9 +24,11 @@ export interface IProductSearch {
     supplier_code?: string;
     username?: string;
     status? : ProductStatus
+    anomlyId?: string;
+    anomlyDescription?: string;
 }
 
-type ProductStatus = "IN_STOCK" | "NO_LONGER_IN_STOCK"
+type ProductStatus = "IN_STOCK" | "LOST" | "DAMAGED" | "INSPECTED" | "SHIPPED" | "ANOMLY"
 
 export interface IUser {
     username: string;
@@ -32,12 +36,25 @@ export interface IUser {
     role?: roles;
 }
 
+export interface AuthenticatedUserPayload {
+    data: IUser;
+    token: string;
+}
+
+export interface IUserAdvanced {
+    id: number;
+    name: string;
+    password: string;
+    role: roles;
+    createdAt: Date;
+}
+
 export interface IUserSearch {
     username? : string;
     role?: roles;
 }
 
-type roles = "ADMIN" | "WORKER"
+type roles = "ADMIN" | "WORKER" | "CONTROLLER"
 
 export interface AuthenticatedProductPayload {
     data: IProduct;
@@ -51,5 +68,16 @@ export interface AuthenticatedProductSearchPayload {
 
 export interface AuthenticatedUserSearchPayload {
     data: IUserSearch;
+    token: string;
+}
+
+export interface IAnomly {
+    id: string;
+    description: string;
+    name: string;
+}
+
+export interface AuthenticatedAnomlyPayload {
+    data: IAnomly;
     token: string;
 }
