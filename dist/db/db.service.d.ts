@@ -60,6 +60,11 @@ export declare class DbService {
         ok: boolean;
         data: any;
     }>;
+    createSubProduct(data: {
+        product_id: string;
+        subproduct_id: string;
+    }): Promise<any>;
+    getAllSubProducts(): Promise<any>;
     getAnomlies(): Promise<{
         message: string;
         ok: boolean;

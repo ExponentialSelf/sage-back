@@ -41,6 +41,24 @@ let DbController = class DbController {
         }
         return this.dbService.createProduct(payload);
     }
+    async createSubProduct(payload) {
+        console.log('Commencing subproduct creation');
+        console.log('Payload:', payload);
+        if (!payload.product_id || !payload.subproduct_id) {
+            throw new common_1.HttpException('Product ID and Subproduct ID are required', common_1.HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+        if (!payload.token) {
+            throw new common_1.HttpException('Token was missing', common_1.HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+        const token = this.dbService.checkToken(payload.token);
+        if (!token) {
+            throw new common_1.HttpException('Token was invalid', common_1.HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+        return this.dbService.createSubProduct({ product_id: payload.product_id, subproduct_id: payload.subproduct_id });
+    }
+    async getAllSubProducts() {
+        return this.dbService.getAllSubProducts();
+    }
     put(payload) {
         console.log('Commencing product creation');
         console.log('Payload:', payload);
@@ -141,6 +159,19 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], DbController.prototype, "create", null);
+__decorate([
+    (0, common_1.Post)('/subProducts/handler'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], DbController.prototype, "createSubProduct", null);
+__decorate([
+    (0, common_1.Get)('/subProducts'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], DbController.prototype, "getAllSubProducts", null);
 __decorate([
     (0, common_1.Put)('/products/handler'),
     __param(0, (0, common_1.Body)()),

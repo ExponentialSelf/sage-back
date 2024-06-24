@@ -340,6 +340,29 @@ export class DbService {
     return res
   }
 
+  async createSubProduct(data: { product_id: string, subproduct_id: string }): Promise<any> {
+    try {
+      const subProduct = await this.prisma.subProducts.create({
+        data: {
+          product_id: data.product_id,
+          subproduct_id: data.subproduct_id,
+        },
+      });
+      return { success: true, subProduct };
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  async getAllSubProducts(): Promise<any> {
+    try {
+      const subProducts = await this.prisma.subProducts.findMany();
+      return { success: true, subProducts };
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
   async getAnomlies() {
     let res = {
       message: "",

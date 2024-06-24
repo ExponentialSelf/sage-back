@@ -8,6 +8,8 @@ export declare class DbController {
         payload: AuthenticatedProductPayload;
         result: any;
     }>;
+    createSubProduct(payload: any): Promise<any>;
+    getAllSubProducts(): Promise<any>;
     put(payload: AuthenticatedProductPayload): Promise<{
         message: string;
         payload: AuthenticatedProductPayload;

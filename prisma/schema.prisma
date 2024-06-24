@@ -35,8 +35,8 @@ model Product {
 model SubProducts {
   id            Int           @id @default(autoincrement())
   product     Product       @relation(fields: [product_id], references: [unique_id])
-  product_id String        @db.VarChar(40)
-  subproduct_id  String    @db.VarChar(40)
+  product_id String         @db.VarChar(40)
+  subproduct_id  String     @db.VarChar(40)
 }
 
 model User {

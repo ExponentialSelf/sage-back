@@ -31,6 +31,31 @@ export class DbController {
     return this.dbService.createProduct(payload)
   }
 
+  @Post('/subProducts/handler')
+  async createSubProduct(@Body() payload: any): Promise<any> {
+    console.log('Commencing subproduct creation');
+    console.log('Payload:', payload);
+
+    if (!payload.product_id || !payload.subproduct_id) {
+      throw new HttpException('Product ID and Subproduct ID are required', HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+    if (!payload.token) {
+      throw new HttpException('Token was missing', HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+
+    const token = this.dbService.checkToken(payload.token);
+    if (!token) {
+      throw new HttpException('Token was invalid', HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+
+    return this.dbService.createSubProduct({ product_id: payload.product_id, subproduct_id: payload.subproduct_id });
+  }
+
+  @Get('/subProducts')
+  async getAllSubProducts(): Promise<any> {
+    return this.dbService.getAllSubProducts();
+  }
+
   @Put('/products/handler')
   put(@Body() payload :AuthenticatedProductPayload)
   {

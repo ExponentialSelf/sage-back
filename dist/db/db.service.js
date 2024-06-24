@@ -324,6 +324,29 @@ let DbService = class DbService {
         }
         return res;
     }
+    async createSubProduct(data) {
+        try {
+            const subProduct = await this.prisma.subProducts.create({
+                data: {
+                    product_id: data.product_id,
+                    subproduct_id: data.subproduct_id,
+                },
+            });
+            return { success: true, subProduct };
+        }
+        catch (error) {
+            throw new common_1.HttpException(error.message, common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    async getAllSubProducts() {
+        try {
+            const subProducts = await this.prisma.subProducts.findMany();
+            return { success: true, subProducts };
+        }
+        catch (error) {
+            throw new common_1.HttpException(error.message, common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
     async getAnomlies() {
         let res = {
             message: "",
