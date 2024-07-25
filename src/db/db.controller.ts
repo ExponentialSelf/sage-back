@@ -32,7 +32,7 @@ export class DbController {
   }
 
   @Post('/subProducts/handler')
-  async createSubProduct(@Body() payload: any): Promise<any> {
+  async createSubProduct(@Body() payload) {
     console.log('Commencing subproduct creation');
     console.log('Payload:', payload);
 

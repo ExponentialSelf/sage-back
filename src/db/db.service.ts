@@ -187,7 +187,7 @@ export class DbService {
   getAll(take?: string,skip?: string) {
     return this.prisma.product.findMany(
       {
-        skip: Number(skip),
+        skip: Number(skip),                                                // search periodicly
         take: Number(take),
         orderBy: {
           model: 'asc'
